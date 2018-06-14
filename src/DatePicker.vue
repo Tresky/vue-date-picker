@@ -205,6 +205,17 @@
   }
 
   /**
+   * A listener for intercepting mousewheel events and consuming them.
+   * This functionality replaces the need for making the body overflow: hidden
+   * which forced the page to auto-scroll the page back to the top.
+   */
+  const mouseWheelListener = e => {
+    e.stopPropagation()
+    e.preventDefault()
+    e.returnValue = false
+  }
+
+  /**
    * Actual component stuff
    */
 
@@ -452,7 +463,7 @@
     },
 
     created () {
-      this.hideBodyOverflow(true)
+      document.body.addEventListener('mousewheel', eventListener)
 
       this.setDate()
 
@@ -606,23 +617,6 @@
       // Misc methods that have nothing to do with calendar stuff.
 
       /**
-       * Hides the overflow of the body when the date picker is active.
-       *
-       * @param  {Boolean}
-       */
-      hideBodyOverflow (show) {
-        const bodyEl = document.querySelector('body')
-
-        if (show === true) {
-          bodyEl.style.overflow = 'hidden'
-
-          return
-        }
-
-        bodyEl.style.overflow = ''
-      },
-
-      /**
        * Close the date picker if the escape key is pressed.
        */
       setEscapeEvent () {
@@ -650,7 +644,7 @@
        * see fit.
        */
       onClose () {
-        this.hideBodyOverflow(false)
+        document.body.removeEventListener('mousewheel', eventListener)
 
         this.$emit('close')
       }
